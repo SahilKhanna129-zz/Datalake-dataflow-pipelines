@@ -1,0 +1,5 @@
+*** Use the job properties and workflow files to execute pipeline tasks ***
+
+1. Add the scripts to be used like pig script or hive script etc in the same folder
+2. Move the files to the HDFS to the same location mentioned in the job properties
+3. Execute the oozie config file to run the datapipeline for data manipulation in Datalake
