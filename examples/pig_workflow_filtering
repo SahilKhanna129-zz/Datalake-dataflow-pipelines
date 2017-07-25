@@ -39,44 +39,12 @@
             <param>INPUT=/user/${wf:user()}/raw_data/flight_data/</param>
             <param>OUTPUT=/user/${wf:user()}/processed_data/flight_data</param>
         </pig>
-        <ok to="hive2-node"/>
-        <error to="fail"/>
-    </action>
-    <action name="hive2-node">
-        <hive2 xmlns="uri:oozie:hive2-action:0.1">
-            <job-tracker>${jobTracker}</job-tracker>
-            <name-node>${nameNode}</name-node>
-            <configuration>
-                <property>
-                    <name>mapred.job.queue.name</name>
-                    <value>${queueName}</value>
-                </property>
-            </configuration>
-            <jdbc-url>${jdbcURL}</jdbc-url>
-            <script>script.q</script>
-            <param>INPUT=/user/root/processed_data/flight_data</param>
-            <param>OUTPUT=/user/root/refined_data/hive2</param>
-        </hive2>
-        <ok to="sqoop-node"/>
-        <error to="fail"/>
-    </action>
-    <action name="sqoop-node">
-        <sqoop xmlns="uri:oozie:sqoop-action:0.2">
-            <job-tracker>${jobTracker}</job-tracker>
-            <name-node>${nameNode}</name-node>
-            <configuration>
-                <property>
-                    <name>mapred.job.queue.name</name>
-                    <value>${queueName}</value>
-                </property>
-            </configuration>
-            <command>export --connect jdbc:postgresql://ec2-54-91-224-45.compute-1.amazonaws.com/demo --username postgres --password admin --table flight_data --update-mode allowinsert --export-dir /user/root/processed_data/flight_data</command>
-       </sqoop>
         <ok to="end"/>
         <error to="fail"/>
     </action>
+    
     <kill name="fail">
-        <message>Hive2 (Beeline) action failed, error message[${wf:errorMessage(wf:lastErrorNode())}]</message>
+        <message>Action failed, error message[${wf:errorMessage(wf:lastErrorNode())}]</message>
     </kill>
     <end name="end"/>
 </workflow-app>

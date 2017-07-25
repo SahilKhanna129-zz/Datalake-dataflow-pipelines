@@ -17,49 +17,7 @@
   limitations under the License.
 -->
 <workflow-app xmlns="uri:oozie:workflow:0.5" name="datapipeline-wf">
-    <start to="pig-node"/>
-    <action name="pig-node">
-        <pig>
-            <job-tracker>${jobTracker}</job-tracker>
-            <name-node>${nameNode}</name-node>
-            <prepare>
-                <delete path="${nameNode}/user/${wf:user()}/processed_data/flight_data"/>
-            </prepare>
-            <configuration>
-                <property>
-                    <name>mapred.job.queue.name</name>
-                    <value>${queueName}</value>
-                </property>
-                <property>
-                    <name>mapred.compress.map.output</name>
-                    <value>true</value>
-                </property>
-            </configuration>
-            <script>id.pig</script>
-            <param>INPUT=/user/${wf:user()}/raw_data/flight_data/</param>
-            <param>OUTPUT=/user/${wf:user()}/processed_data/flight_data</param>
-        </pig>
-        <ok to="hive2-node"/>
-        <error to="fail"/>
-    </action>
-    <action name="hive2-node">
-        <hive2 xmlns="uri:oozie:hive2-action:0.1">
-            <job-tracker>${jobTracker}</job-tracker>
-            <name-node>${nameNode}</name-node>
-            <configuration>
-                <property>
-                    <name>mapred.job.queue.name</name>
-                    <value>${queueName}</value>
-                </property>
-            </configuration>
-            <jdbc-url>${jdbcURL}</jdbc-url>
-            <script>script.q</script>
-            <param>INPUT=/user/root/processed_data/flight_data</param>
-            <param>OUTPUT=/user/root/refined_data/hive2</param>
-        </hive2>
-        <ok to="sqoop-node"/>
-        <error to="fail"/>
-    </action>
+    <start to="sqoop-node"/>
     <action name="sqoop-node">
         <sqoop xmlns="uri:oozie:sqoop-action:0.2">
             <job-tracker>${jobTracker}</job-tracker>
@@ -75,6 +33,7 @@
         <ok to="end"/>
         <error to="fail"/>
     </action>
+    
     <kill name="fail">
         <message>Hive2 (Beeline) action failed, error message[${wf:errorMessage(wf:lastErrorNode())}]</message>
     </kill>
