@@ -36,7 +36,7 @@
                 </property>
             </configuration>
             <script>id.pig</script>
-            <param>INPUT=/user/${wf:user()}/raw_data/flight_data/</param>
+            <param>INPUT=/user/${wf:user()}/raw_data/</param>
             <param>OUTPUT=/user/${wf:user()}/processed_data/flight_data</param>
         </pig>
         <ok to="hive2-node"/>
